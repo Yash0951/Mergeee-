@@ -32,10 +32,10 @@ export async function POST(req: NextRequest) {
     };
     
     // Get user authentication state directly in the route
-    let userId = null;
+    // Note: We don't need to use userId here as checkUserGenerationLimit() handles auth internally
     try {
-      const authResult = await auth();
-      userId = authResult.userId;
+      // Just check if auth is working, but we don't need to use the userId directly
+      await auth();
     } catch (authError) {
       console.error('Auth error:', authError);
       // Continue without auth - will use anonymous user
