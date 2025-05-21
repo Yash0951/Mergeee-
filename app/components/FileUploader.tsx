@@ -12,7 +12,7 @@ interface FileUploaderProps {
 export default function FileUploader({
   onFilesSelected,
   maxFiles = 10,
-  maxSize = 100, // 100MB default
+  maxSize = 4, // Reduce to 4MB to stay under Vercel's 4.5MB limit
 }: FileUploaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -34,7 +34,14 @@ export default function FileUploader({
       // Check file size
       const oversizedFiles = pdfFiles.filter(file => file.size > maxSize * 1024 * 1024);
       if (oversizedFiles.length > 0) {
-        alert(`Some files exceed the maximum size of ${maxSize}MB.`);
+        alert(`Some files exceed the maximum size of ${maxSize}MB. Due to server limitations, files must be smaller than ${maxSize}MB.`);
+        return;
+      }
+
+      // Check total size of all files
+      const totalSize = pdfFiles.reduce((sum, file) => sum + file.size, 0);
+      if (totalSize > maxSize * 1024 * 1024) {
+        alert(`Total file size exceeds ${maxSize}MB. Please select smaller files or fewer files.`);
         return;
       }
 
@@ -122,7 +129,7 @@ export default function FileUploader({
         className="hidden"
       />
       <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-        Maximum {maxFiles} files. Up to {maxSize}MB per file.
+        Maximum {maxFiles} files. Up to {maxSize}MB per file. Total size must be under {maxSize}MB.
       </p>
     </div>
   );

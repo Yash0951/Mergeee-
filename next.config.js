@@ -18,7 +18,26 @@ const nextConfig = {
   },
   // Moved from experimental to top-level as per Next.js 15 requirements
   serverExternalPackages: ['mongodb', 'mongoose'],
-  experimental: {}
+  experimental: {},
+  // Increase timeout for PDF processing
+  serverRuntimeConfig: {
+    // Will only be available on the server side
+    requestTimeout: 30000, // 30 seconds
+  },
+  // For Vercel deployment
+  async headers() {
+    return [
+      {
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Connection',
+            value: 'keep-alive',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig; 

@@ -60,6 +60,14 @@ export default function Merge() {
       return;
     }
 
+    // Check total file size before sending
+    const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+    const maxSizeMB = 4; // 4MB to stay under Vercel's 4.5MB limit
+    if (totalSize > maxSizeMB * 1024 * 1024) {
+      setError(`Total file size (${(totalSize / (1024 * 1024)).toFixed(2)}MB) exceeds the ${maxSizeMB}MB limit. Please select smaller files.`);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -80,6 +88,11 @@ export default function Merge() {
 
       // Check if the response is OK (status code 200-299)
       if (!response.ok) {
+        // Handle specific Vercel payload errors
+        if (response.status === 413) {
+          throw new Error('Files too large for server processing. Please select smaller files (under 4MB total).');
+        }
+        
         // For non-JSON responses or parsing errors, use text() first
         const contentType = response.headers.get('content-type');
         
@@ -94,6 +107,11 @@ export default function Merge() {
               throw new Error('Generation limit exceeded. Please try again later.');
             }
             
+            // Check for Vercel specific function payload error
+            if (errorData.error && errorData.error.includes('FUNCTION_PAYLOAD_TOO_LARGE')) {
+              throw new Error('Files too large for server processing. Please select smaller files (under 4MB total).');
+            }
+            
             throw new Error(errorData.error || 'Failed to merge PDFs');
           } catch (jsonError) {
             // If JSON parsing fails, use the original error or a generic message
@@ -106,6 +124,9 @@ export default function Merge() {
         } else {
           // For non-JSON responses
           const textError = await response.text();
+          if (textError.includes('FUNCTION_PAYLOAD_TOO_LARGE') || textError.includes('Request Entity Too Large')) {
+            throw new Error('Files too large for server processing. Please select smaller files (under 4MB total).');
+          }
           throw new Error(textError || `Server error (${response.status})`);
         }
       }
@@ -161,7 +182,7 @@ export default function Merge() {
             <FileUploader 
               onFilesSelected={handleFilesSelected}
               maxFiles={10}
-              maxSize={100}
+              maxSize={4} // Match with the updated 4MB limit
             />
             
             <div className="mt-8">
