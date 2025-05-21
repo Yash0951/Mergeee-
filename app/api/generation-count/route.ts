@@ -10,12 +10,14 @@ export async function GET() {
     return NextResponse.json({
       count: generationInfo.count,
       remainingGenerations: generationInfo.remainingGenerations,
-      nextResetTime: generationInfo.nextResetTime
+      nextResetTime: generationInfo.nextResetTime || null
     });
   } catch (error) {
     console.error('Error getting generation count:', error);
+    // Return a more specific error message if possible
+    const errorMessage = error instanceof Error ? error.message : 'Failed to get generation count';
     return NextResponse.json(
-      { error: 'Failed to get generation count' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

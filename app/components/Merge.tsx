@@ -78,38 +78,61 @@ export default function Merge() {
         body: formData,
       });
 
+      // Check if the response is OK (status code 200-299)
       if (!response.ok) {
-        // Handle rate limit error specifically
-        if (response.status === 429) {
-          const errorData = await response.json();
-          if (errorData.nextResetTime) {
-            setNextResetTime(new Date(errorData.nextResetTime));
-            setShowRateLimitPopup(true);
-          }
-          throw new Error('Generation limit exceeded. Please try again later.');
-        }
+        // For non-JSON responses or parsing errors, use text() first
+        const contentType = response.headers.get('content-type');
         
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to merge PDFs');
+        if (contentType && contentType.includes('application/json')) {
+          try {
+            const errorData = await response.json();
+            
+            // Handle rate limit error specifically
+            if (response.status === 429 && errorData.nextResetTime) {
+              setNextResetTime(new Date(errorData.nextResetTime));
+              setShowRateLimitPopup(true);
+              throw new Error('Generation limit exceeded. Please try again later.');
+            }
+            
+            throw new Error(errorData.error || 'Failed to merge PDFs');
+          } catch (jsonError) {
+            // If JSON parsing fails, use the original error or a generic message
+            if (jsonError instanceof Error) {
+              throw jsonError;
+            } else {
+              throw new Error(`Server error (${response.status})`);
+            }
+          }
+        } else {
+          // For non-JSON responses
+          const textError = await response.text();
+          throw new Error(textError || `Server error (${response.status})`);
+        }
       }
 
-      // Get the file blob from the response
-      const blob = await response.blob();
-      
-      // Create a download link
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'merged-document.pdf';
-      document.body.appendChild(a);
-      a.click();
-      
-      // Clean up
-      URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      
-      // Force generation counter to update
-      setGenerationCounterKey(prev => prev + 1);
+      // Response is OK, check if it's a PDF (blob)
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/pdf')) {
+        // Get the file blob from the response
+        const blob = await response.blob();
+        
+        // Create a download link
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'merged-document.pdf';
+        document.body.appendChild(a);
+        a.click();
+        
+        // Clean up
+        URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        // Force generation counter to update
+        setGenerationCounterKey(prev => prev + 1);
+      } else {
+        throw new Error('Server returned an invalid response format');
+      }
     } catch (err) {
       console.error('Error merging PDFs:', err);
       setError(err instanceof Error ? err.message : 'An unknown error occurred');

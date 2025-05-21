@@ -18,7 +18,15 @@ export async function checkUserGenerationLimit(): Promise<{
   nextResetTime?: Date;
 }> {
   // Get current user
-  const { userId } = await auth();
+  let userId: string | null;
+  try {
+    const authResult = await auth();
+    userId = authResult.userId;
+  } catch (error) {
+    console.error('Error getting user authentication:', error);
+    // Fallback to allow generation in case of auth error
+    return { canGenerate: true, remainingGenerations: MAX_GENERATIONS };
+  }
   
   // If no user is authenticated, treat as a new user with full generation quota
   if (!userId) {
@@ -38,16 +46,22 @@ export async function checkUserGenerationLimit(): Promise<{
     
     // If no record exists or the cooldown period has passed, create/reset the record
     if (!userRecord || (currentTime.getTime() - userRecord.lastResetTime.getTime() >= COOLDOWN_PERIOD_MS)) {
-      await generations.updateOne(
-        { userId },
-        { 
-          $set: {
-            count: 1,
-            lastResetTime: currentTime
-          }
-        },
-        { upsert: true }
-      );
+      try {
+        await generations.updateOne(
+          { userId },
+          { 
+            $set: {
+              count: 1,
+              lastResetTime: currentTime
+            }
+          },
+          { upsert: true }
+        );
+      } catch (updateError) {
+        console.error('Error updating generation record:', updateError);
+        // Allow generation even if update fails
+        return { canGenerate: true, remainingGenerations: MAX_GENERATIONS - 1 };
+      }
       
       return { 
         canGenerate: true, 
@@ -66,10 +80,19 @@ export async function checkUserGenerationLimit(): Promise<{
     }
     
     // Increment generation count
-    await generations.updateOne(
-      { userId },
-      { $inc: { count: 1 } }
-    );
+    try {
+      await generations.updateOne(
+        { userId },
+        { $inc: { count: 1 } }
+      );
+    } catch (incrementError) {
+      console.error('Error incrementing generation count:', incrementError);
+      // Allow generation even if update fails, but don't count it
+      return { 
+        canGenerate: true, 
+        remainingGenerations: MAX_GENERATIONS - userRecord.count
+      };
+    }
     
     return { 
       canGenerate: true, 
@@ -87,7 +110,14 @@ export async function getCurrentUserGenerationCount(): Promise<{
   remainingGenerations: number;
   nextResetTime?: Date;
 }> {
-  const { userId } = await auth();
+  let userId: string | null;
+  try {
+    const authResult = await auth();
+    userId = authResult.userId;
+  } catch (error) {
+    console.error('Error getting user authentication:', error);
+    return { count: 0, remainingGenerations: MAX_GENERATIONS };
+  }
   
   if (!userId) {
     return { count: 0, remainingGenerations: MAX_GENERATIONS };
@@ -121,6 +151,7 @@ export async function getCurrentUserGenerationCount(): Promise<{
     };
   } catch (error) {
     console.error('Error getting generation count:', error);
+    // In case of database error, return max generations to avoid blocking users
     return { count: 0, remainingGenerations: MAX_GENERATIONS };
   }
 } 
