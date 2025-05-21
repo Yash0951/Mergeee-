@@ -80,17 +80,29 @@ export default function Merge() {
         formData.append('files', fileItem.file);
       });
 
-      // Send the request to the API
+      // Send the request to the API with credentials
       const response = await fetch('/api/merge-pdf', {
         method: 'POST',
         body: formData,
+        credentials: 'include', // Include credentials for authentication
+        // Don't set Content-Type header, let the browser set it with the boundary for multipart/form-data
       });
 
       // Check if the response is OK (status code 200-299)
       if (!response.ok) {
+        // Handle authentication error
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('Authentication error. Please try logging in again.');
+        }
+
         // Handle specific Vercel payload errors
         if (response.status === 413) {
           throw new Error('Files too large for server processing. Please select smaller files (under 4MB total).');
+        }
+
+        // Handle method not allowed error
+        if (response.status === 405) {
+          throw new Error('Server method not allowed. This is likely an authentication issue. Please try refreshing the page.');
         }
         
         // For non-JSON responses or parsing errors, use text() first

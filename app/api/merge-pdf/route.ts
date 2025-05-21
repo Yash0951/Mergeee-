@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkUserGenerationLimit } from '@/app/lib/rateLimit';
 import PDFMerger from 'pdf-merger-js';
+import { auth } from '@clerk/nextjs/server';
 
 // Set bodyParser config to handle larger payloads, though Vercel has hard limits
 export const config = {
@@ -10,8 +11,36 @@ export const config = {
   },
 };
 
+// Add OPTIONS method to handle preflight requests for CORS
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
+}
+
 export async function POST(req: NextRequest) {
   try {
+    // Add CORS headers to allow the request from authenticated users
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    };
+    
+    // Get user authentication state directly in the route
+    let userId = null;
+    try {
+      const authResult = await auth();
+      userId = authResult.userId;
+    } catch (authError) {
+      console.error('Auth error:', authError);
+      // Continue without auth - will use anonymous user
+    }
+
     // Check if user has reached generation limit
     const rateLimit = await checkUserGenerationLimit();
     
@@ -21,7 +50,10 @@ export async function POST(req: NextRequest) {
           error: 'Generation limit exceeded', 
           nextResetTime: rateLimit.nextResetTime
         },
-        { status: 429 }
+        { 
+          status: 429,
+          headers: corsHeaders
+        }
       );
     }
 
@@ -33,7 +65,10 @@ export async function POST(req: NextRequest) {
       if (size > 4.5 * 1024 * 1024) {
         return NextResponse.json(
           { error: 'Files too large. The total size must be under 4.5MB.' },
-          { status: 413 }
+          { 
+            status: 413,
+            headers: corsHeaders
+          }
         );
       }
     }
@@ -49,12 +84,18 @@ export async function POST(req: NextRequest) {
           (error.message.includes('size') || error.message.includes('large'))) {
         return NextResponse.json(
           { error: 'Files too large. The total size must be under 4.5MB.' },
-          { status: 413 }
+          { 
+            status: 413,
+            headers: corsHeaders 
+          }
         );
       }
       return NextResponse.json(
         { error: 'Invalid form data' },
-        { status: 400 }
+        { 
+          status: 400,
+          headers: corsHeaders
+        }
       );
     }
     
@@ -63,7 +104,10 @@ export async function POST(req: NextRequest) {
     if (!files || files.length === 0) {
       return NextResponse.json(
         { error: 'No files provided' },
-        { status: 400 }
+        { 
+          status: 400,
+          headers: corsHeaders
+        }
       );
     }
 
@@ -79,7 +123,10 @@ export async function POST(req: NextRequest) {
     if (totalSize > 4.5 * 1024 * 1024) {
       return NextResponse.json(
         { error: 'Files too large. The total size must be under 4.5MB.' },
-        { status: 413 }
+        { 
+          status: 413,
+          headers: corsHeaders
+        }
       );
     }
 
@@ -98,7 +145,10 @@ export async function POST(req: NextRequest) {
       console.error('Error processing PDF files:', error);
       return NextResponse.json(
         { error: 'Error processing PDF files. Please ensure all files are valid PDFs.' },
-        { status: 400 }
+        { 
+          status: 400,
+          headers: corsHeaders
+        }
       );
     }
     
@@ -110,7 +160,10 @@ export async function POST(req: NextRequest) {
       console.error('Error merging PDFs:', error);
       return NextResponse.json(
         { error: 'Failed to merge PDFs. Please try again with different files.' },
-        { status: 500 }
+        { 
+          status: 500,
+          headers: corsHeaders
+        }
       );
     }
     
@@ -119,6 +172,7 @@ export async function POST(req: NextRequest) {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename="merged-document.pdf"',
+        ...corsHeaders
       },
     });
   } catch (error) {
