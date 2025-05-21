@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkUserGenerationLimit } from '@/app/lib/rateLimit';
 import PDFMerger from 'pdf-merger-js';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 
 // Set bodyParser config to handle larger payloads, though Vercel has hard limits
 export const config = {

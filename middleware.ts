@@ -1,21 +1,31 @@
-import { authMiddleware } from '@clerk/nextjs';
+import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
-// Bypass auth for the merge-pdf endpoint
-export default authMiddleware({
-  publicRoutes: ['/api/merge-pdf'],
+// This function defines which routes to exclude from authentication
+function isPublicRoute(path) {
+  // Define the routes that should be public
+  const publicRoutes = [
+    '/api/merge-pdf'
+  ];
   
-  // Optional: Customize the behavior of the middleware
-  afterAuth(auth, req) {
-    // For the merge-pdf route, let it handle auth internally
-    if (req.nextUrl.pathname === '/api/merge-pdf') {
-      return NextResponse.next();
-    }
-    
-    // Default auth handling for other routes
-    return;
+  return publicRoutes.some(pattern => 
+    path === pattern || 
+    path.startsWith(`${pattern}/`)
+  );
+}
+
+// Define the middleware
+export default function middleware(request) {
+  const { pathname } = request.nextUrl;
+  
+  // Skip authentication for specific routes
+  if (isPublicRoute(pathname)) {
+    return NextResponse.next();
   }
-});
+  
+  // Use Clerk middleware for protected routes
+  return clerkMiddleware()(request);
+}
 
 export const config = {
   matcher: [
