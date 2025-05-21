@@ -1,5 +1,5 @@
 import { connectToMongoDB } from './mongodb';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@clerk/nextjs';
 
 // Constants
 const MAX_GENERATIONS = 10;

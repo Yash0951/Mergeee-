@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkUserGenerationLimit } from '@/app/lib/rateLimit';
 import PDFMerger from 'pdf-merger-js';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@clerk/nextjs';
 
 // Set bodyParser config to handle larger payloads, though Vercel has hard limits
 export const config = {
@@ -184,12 +184,24 @@ export async function POST(req: NextRequest) {
          error.message.includes('large'))) {
       return NextResponse.json(
         { error: 'Files too large. The total size must be under 4.5MB.' },
-        { status: 413 }
+        { status: 413,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          }
+        }
       );
     }
     return NextResponse.json(
       { error: 'Failed to merge PDFs' },
-      { status: 500 }
+      { status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        }
+      }
     );
   }
 } 
