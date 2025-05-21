@@ -1,29 +1,18 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-// This function defines which routes to exclude from authentication
-function isPublicRoute(path) {
-  // Define the routes that should be public
-  const publicRoutes = [
-    '/api/merge-pdf'
-  ];
-  
-  return publicRoutes.some(pattern => 
-    path === pattern || 
-    path.startsWith(`${pattern}/`)
-  );
-}
-
-// Define the middleware
-export default function middleware(request) {
-  const { pathname } = request.nextUrl;
-  
-  // Skip authentication for specific routes
-  if (isPublicRoute(pathname)) {
+// Simple middleware function that checks the route first
+export default function middleware(request: NextRequest) {
+  // Skip authentication for specific API routes
+  if (request.nextUrl.pathname === '/api/merge-pdf' || 
+      request.nextUrl.pathname.startsWith('/api/merge-pdf/') ||
+      request.nextUrl.pathname === '/api/generation-count' ||
+      request.nextUrl.pathname.startsWith('/api/generation-count/')) {
     return NextResponse.next();
   }
   
-  // Use Clerk middleware for protected routes
+  // For other routes, use Clerk's middleware
+  // @ts-ignore - Clerk's middleware typing is inconsistent across versions
   return clerkMiddleware()(request);
 }
 
