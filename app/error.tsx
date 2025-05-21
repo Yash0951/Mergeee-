@@ -39,7 +39,7 @@ export default function Error({
         {error.message.includes('too large') || error.message.includes('payload') ? (
           <div>
             <p className="text-gray-600 dark:text-gray-300 mb-6">
-              The files you're trying to merge are too large for our server to process.
+              The files you&apos;re trying to merge are too large for our server to process.
               Please use smaller files (under 4MB total) or try again later.
             </p>
             <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg mb-6">
@@ -51,7 +51,7 @@ export default function Error({
           </div>
         ) : (
           <p className="text-gray-600 dark:text-gray-300 mb-6">
-            An unexpected error occurred. We've been notified and are working on a fix.
+            An unexpected error occurred. We&apos;ve been notified and are working on a fix.
           </p>
         )}
         
