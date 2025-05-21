@@ -50,7 +50,7 @@ export default function RateLimitPopup({ nextResetTime, onClose }: RateLimitPopu
           </div>
           
           <p className="text-gray-600 dark:text-gray-300">
-            You've reached your limit of 10 PDF generations per hour. 
+            You&apos;ve reached your limit of 10 PDF generations per hour. 
             Please try again in {formatTimeRemaining()}.
           </p>
         </div>

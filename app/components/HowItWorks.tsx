@@ -98,7 +98,7 @@ export default function HowItWorks() {
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">2. Arrange Your Files</h2>
                   <p className="text-gray-600 dark:text-gray-300">
                     Drag and drop to rearrange your PDF files in the order you want them to appear in the 
-                    final merged document. You can preview each file to ensure you're getting the correct order.
+                    final merged document. You can preview each file to ensure you&apos;re getting the correct order.
                   </p>
                 </div>
               </div>
@@ -108,7 +108,7 @@ export default function HowItWorks() {
                 <div className="md:w-1/2 text-center md:text-right order-2 md:order-1">
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">3. Merge and Download</h2>
                   <p className="text-gray-600 dark:text-gray-300">
-                    Click the "Merge PDFs" button and let our powerful engine combine your documents. 
+                    Click the &quot;Merge PDFs&quot; button and let our powerful engine combine your documents. 
                     Once processing is complete, download your newly merged PDF file with a single click.
                     The merged file will maintain the quality of your original documents.
                   </p>

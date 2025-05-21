@@ -185,7 +185,7 @@ export default function Merge() {
               </div>
               <div className="flex flex-col items-center">
                 <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-3 text-lg font-bold">3</div>
-                <p className="text-gray-600 dark:text-gray-300">Click 'Merge PDFs' and download</p>
+                <p className="text-gray-600 dark:text-gray-300">Click &apos;Merge PDFs&apos; and download</p>
               </div>
             </div>
           </div>

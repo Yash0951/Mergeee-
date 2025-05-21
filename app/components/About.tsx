@@ -10,7 +10,7 @@ export default function About() {
             About <span className="text-blue-600 dark:text-blue-400">Mergeee!</span>
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-            We're on a mission to simplify document management for everyone.
+            We&apos;re on a mission to simplify document management for everyone.
           </p>
         </div>
       </div>
@@ -63,7 +63,7 @@ export default function About() {
                 },
                 {
                   title: "Innovation",
-                  description: "While we keep our tools simple, we're always looking for ways to improve and innovate in the document management space.",
+                  description: "While we keep our tools simple, we&apos;re always looking for ways to improve and innovate in the document management space.",
                   icon: "💡"
                 }
               ].map((value, i) => (
@@ -86,7 +86,7 @@ export default function About() {
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Our Team</h2>
             <p className="text-gray-600 dark:text-gray-300 mb-12">
-              We're a passionate group of developers, designers, and document management experts
+              We&apos;re a passionate group of developers, designers, and document management experts
               committed to making your workflow simpler.
             </p>
             

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
@@ -183,7 +182,7 @@ export default function Home() {
               }
             ].map((testimonial, i) => (
               <div key={i} className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-gray-100 dark:border-gray-700">
-                <p className="text-gray-600 dark:text-gray-300 mb-4">"{testimonial.quote}"</p>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">&quot;{testimonial.quote}&quot;</p>
                 <div>
                   <p className="font-semibold text-gray-900 dark:text-white">{testimonial.name}</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">{testimonial.title}</p>

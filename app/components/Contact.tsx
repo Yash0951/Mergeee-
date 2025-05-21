@@ -8,7 +8,7 @@ export default function Contact() {
             Contact <span className="text-blue-600 dark:text-blue-400">Us</span>
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-            We'd love to hear from you. Get in touch with our team.
+            We&apos;d love to hear from you. Get in touch with our team.
           </p>
         </div>
       </div>
