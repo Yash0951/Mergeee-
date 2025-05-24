@@ -32,7 +32,7 @@ export default function Contact() {
                       </svg>
                       <div>
                         <p className="font-medium">Phone</p>
-                        <p className="opacity-90">+1 (555) 123-4567</p>
+                        <p className="opacity-90">+91 12345-67890</p>
                       </div>
                     </div>
                     
@@ -43,7 +43,7 @@ export default function Contact() {
                       </svg>
                       <div>
                         <p className="font-medium">Email</p>
-                        <p className="opacity-90">support@pdfmerge.com</p>
+                        <p className="opacity-90">yash04meena@gmail.com</p>
                       </div>
                     </div>
                     
@@ -54,7 +54,7 @@ export default function Contact() {
                       </svg>
                       <div>
                         <p className="font-medium">Location</p>
-                        <p className="opacity-90">123 PDF Street, Digital City, CA 94000</p>
+                        <p className="opacity-90">Bhopal, Madhya Pradesh, 462022</p>
                       </div>
                     </div>
                   </div>
@@ -88,7 +88,7 @@ export default function Contact() {
                         <input 
                           type="text" 
                           className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white"
-                          placeholder="John"
+                          placeholder="Yash"
                         />
                       </div>
                       <div>
@@ -96,7 +96,7 @@ export default function Contact() {
                         <input 
                           type="text" 
                           className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white"
-                          placeholder="Doe"
+                          placeholder="Meena"
                         />
                       </div>
                     </div>
@@ -106,7 +106,7 @@ export default function Contact() {
                       <input 
                         type="email" 
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white"
-                        placeholder="john.doe@example.com"
+                        placeholder="yash04meena@gmail.com"
                       />
                     </div>
                     

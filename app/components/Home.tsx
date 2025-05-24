@@ -37,7 +37,7 @@ export default function Home() {
                   <div key={i} className="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-700 border-2 border-white dark:border-gray-800"></div>
                 ))}
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Trusted by 10,000+ users worldwide</p>
+              {/* <p className="text-sm text-gray-600 dark:text-gray-300">Trusted by 10,000+ users worldwide</p> */}
             </div>
           </div>
           
@@ -166,20 +166,20 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {[
               {
+                quote: "As a Researcher, I merge worksheets daily. This is the fastest and most reliable tool I've found.",
+                name: "Gaurav Singh",
+                title: "Researcher"
+              },
+              {
                 quote: "This tool saved me so much time! I was able to combine all my reports into one PDF in seconds.",
-                name: "Sarah J.",
-                title: "Marketing Manager"
+                name: "Yash Soni",
+                title: "Artist"
               },
               {
-                quote: "The interface is so intuitive. I didn't need any tutorials to figure out how to use it.",
-                name: "Michael T.",
-                title: "Graphic Designer"
-              },
-              {
-                quote: "As a teacher, I merge worksheets daily. This is the fastest and most reliable tool I've found.",
-                name: "Rebecca L.",
-                title: "High School Teacher"
-              }
+                quote: "The interface is so intuitive. It made my workflow smooth and soo easy to manage my documents.",
+                name: "Tarang Gupta",
+                title: "CEO"
+              },  
             ].map((testimonial, i) => (
               <div key={i} className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-gray-100 dark:border-gray-700">
                 <p className="text-gray-600 dark:text-gray-300 mb-4">&quot;{testimonial.quote}&quot;</p>
